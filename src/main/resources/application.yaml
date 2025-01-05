@@ -1,0 +1,47 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: catalog-service
+  profiles:
+#    active: dev  # Default to dev if no profile is explicitly set
+    active: dev, kafka-enabled  # Default to dev if no profile is explicitly set
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: VnUWe2XNUg
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # options: validate, update, create, create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  security:
+      enabled: false
+security:
+  ignored: /**
+  basic:
+    enabled: false # Disables basic authentication
+  user:
+    name: user # Default username (optional if disabling security)
+    password: password # Default password (optional if disabling security)
+
+management:
+  endpoints:
+    web:
+      exposure:
+#        include: "*" # Expose all Actuator endpoints (if using Actuator)
+        include: health,info,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  security:
+    enabled: false # Disable Actuator security
+#logging:
+#  level:
+#    org:
+#      apache:
+#        kafka: DEBUG

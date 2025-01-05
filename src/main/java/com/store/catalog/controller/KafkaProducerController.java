@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/kafka")
 public class KafkaProducerController {
 
-    private static final String TOPIC = "kafka-topic";
+    private static final String TOPIC = "kafka-topic-1";
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Profile("kafka-enabled")
 public class KafkaConsumer {
 
-    @KafkaListener(topics = "kafka-topic", groupId = "group-id")
+    @KafkaListener(topics = "kafka-topic-1", groupId = "group-id")
     public void consume(String message) {
         System.out.println("Message received: " + message);
     }

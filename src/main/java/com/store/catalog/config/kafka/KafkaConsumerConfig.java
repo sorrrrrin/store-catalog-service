@@ -1,4 +1,4 @@
-package com.store.catalog.kafka;
+package com.store.catalog.config.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -21,13 +21,16 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     String  bootstrapServersUrl;
 
+    @Value("${spring.kafka.consumer.group-id}")
+    String groupId;
+
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServersUrl);
-//        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka-cluster-kafka-bootstrap.kafka:9092");
-//        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9093"); // Kafka service name
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "group-id");
+        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(configProps);

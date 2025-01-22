@@ -1,12 +1,8 @@
-server:
-  port: 8080
 spring:
-  application:
-    name: catalog-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/catalog
     username: postgres
-    password: VnUWe2XNUg
+    password: q5sOl4GJf7
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -19,6 +15,16 @@ spring:
       enabled: false
   kafka:
     bootstrap-servers: localhost:9093
+#  elasticsearch:
+#    uris: https://localhost:9200
+  elasticsearch:
+    cluster-name: elasticsearch
+    repositories:
+      enabled: true
+    uris: https://elasticsearch-master:9200
+    username: elastic
+    password: eZPDIVlS5yo0FHUA
+
 security:
   ignored: /**
   basic:
@@ -26,12 +32,3 @@ security:
   user:
     name: user # Default username (optional if disabling security)
     password: password # Default password (optional if disabling security)
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*" # Expose all Actuator endpoints (if using Actuator)
-  security:
-    enabled: false # Disable Actuator security
-

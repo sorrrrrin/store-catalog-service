@@ -43,6 +43,7 @@ public class ProductService {
 
     public List<ProductDto> getAllProducts() {
         log.debug("Getting all products");
+        //test elastic search
         elasticProductRepository.findAll().forEach(elasticProductDto -> {
             ProductDto productDto = elasticMapper.elasticProductDtoToProductDto(elasticProductDto);
             log.debug(productDto.getName());

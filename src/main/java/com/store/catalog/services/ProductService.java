@@ -7,9 +7,11 @@ import com.store.catalog.commons.kafka.events.ProductUpdateEvent;
 import com.store.catalog.dtos.ProductDto;
 import com.store.catalog.dtos.elastic.ElasticProductDto;
 import com.store.catalog.entities.Product;
-import com.store.catalog.mappers.ProductMapper;
+import com.store.catalog.mappers.CatalogMapper;
+import com.store.catalog.mappers.ElasticMapper;
 import com.store.catalog.repositories.ElasticProductRepository;
 import com.store.catalog.repositories.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,12 +21,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ProductService {
     @Value("${spring.kafka.topic}")
     private String topic;
 
     @Autowired
-    private ProductMapper productMapper;
+    private CatalogMapper catalogMapper;
 
     @Autowired
     private ProductRepository productRepository;
@@ -35,39 +38,26 @@ public class ProductService {
     @Autowired
     ElasticProductRepository elasticProductRepository;
 
+    @Autowired
+    private ElasticMapper elasticMapper;
 
     public List<ProductDto> getAllProducts() {
+        log.debug("Getting all products");
         elasticProductRepository.findAll().forEach(elasticProductDto -> {
-            ProductDto productDto = ProductDto.builder()
-                    .id(elasticProductDto.getId())
-                    .name(elasticProductDto.getName())
-                    .description(elasticProductDto.getDescription())
-                    .price(elasticProductDto.getPrice())
-                    .quantity(elasticProductDto.getQuantity())
-                    .sku(elasticProductDto.getSku())
-                    .build();
-            System.out.println(productDto.getName());
+            ProductDto productDto = elasticMapper.elasticProductDtoToProductDto(elasticProductDto);
+            log.debug(productDto.getName());
         });
 
-        return productRepository.findAll().stream().map(productMapper::productToProductDto).collect(Collectors.toList());
+        return productRepository.findAll().stream().map(catalogMapper::productToProductDto).collect(Collectors.toList());
     }
 
     public ProductDto getProductById(String id) {
-        return productMapper.productToProductDto(productRepository.findById(id).orElse(null));
+        return catalogMapper.productToProductDto(productRepository.findById(id).orElse(null));
     }
 
     public ProductDto addProduct(ProductDto productDto) {
-        ElasticProductDto elasticProductDto = ElasticProductDto.builder()
-                .id(productDto.getId())
-                .name(productDto.getName())
-                .description(productDto.getDescription())
-                .price(productDto.getPrice())
-                .quantity(productDto.getQuantity())
-                .sku(productDto.getSku())
-                .build();
-
-        elasticProductRepository.save(elasticProductDto);
-        return productMapper.productToProductDto(productRepository.save(productMapper.productDtoToProduct(productDto)));
+        elasticProductRepository.save(elasticMapper.productDtoToElasticProductDto(productDto));
+        return catalogMapper.productToProductDto(productRepository.save(catalogMapper.productDtoToProduct(productDto)));
     }
 
     public ProductDto updateProduct(String id, ProductDto productDto) throws JsonProcessingException {
@@ -85,13 +75,13 @@ public class ProductService {
 
             kafkaTemplate.send(topic,  objectMapper.writeValueAsString(productUpdateEvent));
 
-            return productMapper.productToProductDto(productRepository.save(existingProduct));
+            return catalogMapper.productToProductDto(productRepository.save(existingProduct));
         }
         return null;
     }
 
     public void deleteProduct(ProductDto productDto) {
-        productRepository.delete(productMapper.productDtoToProduct(productDto));
+        productRepository.delete(catalogMapper.productDtoToProduct(productDto));
     }
 
     public void deleteAllProducts() {

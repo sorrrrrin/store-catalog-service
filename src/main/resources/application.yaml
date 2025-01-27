@@ -28,11 +28,12 @@ management:
     enabled: false # Disable Actuator security
 logging:
   level:
-    org:
-      springframework:
-        data:
-          elasticsearch:
-            client: DEBUG
+    root: INFO
+    com.store: DEBUG
 #    org:
+#      springframework:
+#        data:
+#          elasticsearch:
+#            client: DEBUG
 #      apache:
 #        kafka: DEBUG

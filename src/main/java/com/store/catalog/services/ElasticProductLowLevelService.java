@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.elasticsearch.indices.ExistsRequest;
 import com.store.catalog.dtos.ProductDto;
 import com.store.catalog.dtos.elastic.ElasticProductDto;
+import com.store.catalog.mappers.ElasticMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
@@ -19,15 +20,10 @@ public class ElasticProductLowLevelService {
     @Autowired
     private ElasticsearchClient elasticsearchClient;
 
+    @Autowired
+    private ElasticMapper elasticMapper;
+
     public void indexProduct(ProductDto productDto) {
-        ElasticProductDto elasticProductDto = ElasticProductDto.builder()
-                .id(productDto.getId())
-                .name(productDto.getName())
-                .description(productDto.getDescription())
-                .price(productDto.getPrice())
-                .quantity(productDto.getQuantity())
-                .sku(productDto.getSku())
-                .build();
         try {
             // Check if the index exists
             boolean indexExists = elasticsearchClient.indices().exists(ExistsRequest.of(e -> e.index("products"))).value();
@@ -38,6 +34,8 @@ public class ElasticProductLowLevelService {
                 CreateIndexResponse createIndexResponse = elasticsearchClient.indices().create(createIndexRequest);
                 // Handle the response if needed
             }
+
+            ElasticProductDto elasticProductDto = elasticMapper.productDtoToElasticProductDto(productDto);
 
             IndexRequest<ElasticProductDto> request = IndexRequest.of(i -> i
                     .index("products")

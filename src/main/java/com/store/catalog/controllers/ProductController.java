@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/catalog")
-public class CatalogController {
+public class ProductController {
     @Autowired
     private ProductService productService;
 
@@ -23,7 +23,7 @@ public class CatalogController {
 
     @PostMapping("/products")
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
-        ProductDto savedProduct = productService.saveProduct(productDto);
+        ProductDto savedProduct = productService.addProduct(productDto);
         return ResponseEntity.ok(savedProduct);
     }
 

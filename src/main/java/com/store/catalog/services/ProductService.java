@@ -61,21 +61,18 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
 
-        if (existingProduct != null) {
-            existingProduct.setName(productDto.getName());
-            existingProduct.setDescription(productDto.getDescription());
-            existingProduct.setPrice(productDto.getPrice());
-            existingProduct.setQuantity(productDto.getQuantity());
-            existingProduct.setSku(productDto.getSku());
+        existingProduct.setName(productDto.getName());
+        existingProduct.setDescription(productDto.getDescription());
+        existingProduct.setPrice(productDto.getPrice());
+        existingProduct.setQuantity(productDto.getQuantity());
+        existingProduct.setSku(productDto.getSku());
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            ProductUpdateEvent productUpdateEvent = new ProductUpdateEvent(Constants.PRODUCT_UPDATED, productDto.getId(), productDto.getName(), productDto.getDescription(), productDto.getSku());
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductUpdateEvent productUpdateEvent = new ProductUpdateEvent(Constants.PRODUCT_UPDATED, productDto.getId(), productDto.getName(), productDto.getDescription(), productDto.getSku());
 
-            kafkaTemplate.send(topic,  objectMapper.writeValueAsString(productUpdateEvent));
+        kafkaTemplate.send(topic,  objectMapper.writeValueAsString(productUpdateEvent));
 
-            return catalogMapper.productToProductDto(productRepository.save(existingProduct));
-        }
-        return null;
+        return catalogMapper.productToProductDto(productRepository.save(existingProduct));
     }
 
     public void deleteProduct(ProductDto productDto) {

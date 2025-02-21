@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.catalog.commons.Constants;
 import com.store.catalog.commons.kafka.events.ProductUpdateEvent;
 import com.store.catalog.dtos.ProductDto;
-import com.store.catalog.dtos.elastic.ElasticProductDto;
 import com.store.catalog.entities.Product;
+import com.store.catalog.exceptions.ProductNotFoundException;
 import com.store.catalog.mappers.CatalogMapper;
 import com.store.catalog.mappers.ElasticMapper;
-import com.store.catalog.repositories.ElasticProductRepository;
 import com.store.catalog.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class ProductService {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    ElasticProductRepository elasticProductRepository;
+    ElasticProductService elasticProductService;
 
     @Autowired
     private ElasticMapper elasticMapper;
@@ -44,25 +43,23 @@ public class ProductService {
     public List<ProductDto> getAllProducts() {
         log.debug("Getting all products");
         //test elastic search
-        elasticProductRepository.findAll().forEach(elasticProductDto -> {
-            ProductDto productDto = elasticMapper.elasticProductDtoToProductDto(elasticProductDto);
-            log.debug(productDto.getName());
-        });
+        elasticProductService.getAllProducts().forEach(System.out::println);
 
         return productRepository.findAll().stream().map(catalogMapper::productToProductDto).collect(Collectors.toList());
     }
 
     public ProductDto getProductById(String id) {
-        return catalogMapper.productToProductDto(productRepository.findById(id).orElse(null));
+        return catalogMapper.productToProductDto(productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found")));
     }
 
-    public ProductDto addProduct(ProductDto productDto) {
-        elasticProductRepository.save(elasticMapper.productDtoToElasticProductDto(productDto));
+    public ProductDto saveProduct(ProductDto productDto) {
         return catalogMapper.productToProductDto(productRepository.save(catalogMapper.productDtoToProduct(productDto)));
     }
 
     public ProductDto updateProduct(String id, ProductDto productDto) throws JsonProcessingException {
-        Product existingProduct = productRepository.findById(id).orElse(null);
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
 
         if (existingProduct != null) {
             existingProduct.setName(productDto.getName());
@@ -86,9 +83,6 @@ public class ProductService {
     }
 
     public void deleteAllProducts() {
-        elasticProductRepository.deleteAll();;
         productRepository.deleteAll();
     }
-
-
 }

@@ -23,7 +23,7 @@ public class CatalogController {
 
     @PostMapping("/products")
     public ResponseEntity<ProductDto> addProduct(@RequestBody ProductDto productDto) {
-        ProductDto savedProduct = productService.addProduct(productDto);
+        ProductDto savedProduct = productService.saveProduct(productDto);
         return ResponseEntity.ok(savedProduct);
     }
 
@@ -43,5 +43,11 @@ public class CatalogController {
     public ResponseEntity<ProductDto> deleteAllProducts() {
         productService.deleteAllProducts();
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable String id) {
+        ProductDto product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
     }
 }

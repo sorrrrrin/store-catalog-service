@@ -53,7 +53,7 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found")));
     }
 
-    public ProductDto saveProduct(ProductDto productDto) {
+    public ProductDto addProduct(ProductDto productDto) {
         return catalogMapper.productToProductDto(productRepository.save(catalogMapper.productDtoToProduct(productDto)));
     }
 

@@ -26,7 +26,7 @@ public class ElasticProductService {
                 .map(elasticMapper::elasticProductDtoToProductDto).collect(Collectors.toList());
     }
 
-    public void saveProduct(ProductDto productDto) {
+    public void addProduct(ProductDto productDto) {
         log.debug("Saving product to ElasticSearch");
         elasticProductRepository.save(elasticMapper.productDtoToElasticProductDto(productDto));
     }

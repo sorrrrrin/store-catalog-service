@@ -26,6 +26,11 @@ management:
         enabled: true
   security:
     enabled: false # Disable Actuator security
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
 logging:
   level:
     root: INFO

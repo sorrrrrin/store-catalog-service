@@ -9,7 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/kafka")
+@RequestMapping("/api/kafka")
 public class KafkaProducerController {
     @Value("${spring.kafka.topic}")
     private String topic;

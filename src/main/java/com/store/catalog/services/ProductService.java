@@ -2,7 +2,7 @@ package com.store.catalog.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.store.catalog.commons.Constants;
+import com.store.catalog.utils.Constants;
 import com.store.catalog.commons.kafka.events.ProductUpdateEvent;
 import com.store.catalog.dtos.ProductDto;
 import com.store.catalog.entities.Product;
@@ -10,6 +10,7 @@ import com.store.catalog.exceptions.ProductNotFoundException;
 import com.store.catalog.mappers.CatalogMapper;
 import com.store.catalog.mappers.ElasticMapper;
 import com.store.catalog.repositories.ProductRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class ProductService {
     @Value("${spring.kafka.topic}")
@@ -68,7 +70,7 @@ public class ProductService {
         existingProduct.setSku(productDto.getSku());
 
         ObjectMapper objectMapper = new ObjectMapper();
-        ProductUpdateEvent productUpdateEvent = new ProductUpdateEvent(Constants.PRODUCT_UPDATED, productDto.getId(), productDto.getName(), productDto.getDescription(), productDto.getSku());
+        ProductUpdateEvent productUpdateEvent = new ProductUpdateEvent(Constants.EVENT_TYPE_PRODUCT_UPDATED, productDto.getId(), productDto.getName(), productDto.getDescription(), productDto.getSku());
 
         kafkaTemplate.send(topic,  objectMapper.writeValueAsString(productUpdateEvent));
 

@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
                 "An unexpected error occurred",
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
 

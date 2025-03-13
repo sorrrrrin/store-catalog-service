@@ -45,7 +45,7 @@ public class ProductServiceTest {
 
     @BeforeEach
     void setUp() {
-        productService = new ProductService(TestConstants.TEST_KAFKA_TOPIC, catalogMapper, productRepository, kafkaTemplate, elasticProductService, elasticMapper);
+        productService = new ProductService(catalogMapper, productRepository, kafkaTemplate, elasticProductService, elasticMapper);
     }
 
     @Test

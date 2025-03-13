@@ -3,6 +3,7 @@ package com.store.catalog.services;
 import com.store.catalog.dtos.ProductDto;
 import com.store.catalog.mappers.ElasticMapper;
 import com.store.catalog.repositories.ElasticProductRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,11 +15,15 @@ import java.util.stream.StreamSupport;
 @Service
 @Slf4j
 public class ElasticProductService {
-    @Autowired
-    private ElasticProductRepository elasticProductRepository;
+    private final ElasticProductRepository elasticProductRepository;
+
+    private final ElasticMapper elasticMapper;
 
     @Autowired
-    private ElasticMapper elasticMapper;
+    public ElasticProductService(ElasticProductRepository elasticProductRepository, ElasticMapper elasticMapper) {
+        this.elasticProductRepository = elasticProductRepository;
+        this.elasticMapper = elasticMapper;
+    }
 
     public List<ProductDto> getAllProducts() {
         log.debug("Getting all products");

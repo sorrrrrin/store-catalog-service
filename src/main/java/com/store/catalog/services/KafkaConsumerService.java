@@ -1,6 +1,10 @@
 package com.store.catalog.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.store.catalog.commons.kafka.events.ProductUpdateEvent;
+import com.store.catalog.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -19,7 +23,30 @@ public class KafkaConsumerService {
     }
 
     @KafkaListener(topics = "${spring.kafka.topic}", groupId = "${spring.kafka.consumer.group-id}")
-    public void consume(String message) {
-        log.debug("Message received: " + message);
+    public void consume(String event) throws JsonProcessingException {
+        try {
+            JsonNode rootNode = objectMapper.readTree(event);
+
+            if (!rootNode.has("eventType")) {
+                log.debug("Event unknown for message: {}", event);
+                return;
+            }
+
+            String eventType = rootNode.get("eventType").asText();
+
+            switch (eventType) {
+                case Constants.EVENT_TYPE_PRODUCT_UPDATED:
+                    ProductUpdateEvent productUpdateEvent = objectMapper.readValue(event, ProductUpdateEvent.class);
+                    log.debug("Product updated: {}", productUpdateEvent);
+                    break;
+                default:
+                    log.debug("Unknown event type for message: {}", event);
+            }
+        } catch (JsonProcessingException e) {
+            log.error("Error parsing event: {}", event);
+            return;
+        }
+
+
     }
 }

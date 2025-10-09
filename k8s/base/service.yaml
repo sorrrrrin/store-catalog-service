@@ -10,4 +10,3 @@ spec:
       port: 8080 # The port on the service
       targetPort: 8080 # The port on the pod
   type: ClusterIP
-

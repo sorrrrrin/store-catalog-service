@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-service
+  template:
+    metadata:
+      labels:
+        app: catalog-service
+    spec:
+      containers:
+        - name: catalog-service
+          image: catalog-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080 # The port on the pod
+          envFrom:
+            - configMapRef:
+                name: catalog-service-config
+            - secretRef:
+                name: catalog-service-secret
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "${SPRING_PROFILES_ACTIVE}" # Set via kustomize/overlay for dev, stg, prod
+            - name: SECURITY_JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-service-secret
+                  key: SECURITY_JWT_SECRET_KEY
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "200m"

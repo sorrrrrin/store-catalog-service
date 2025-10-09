@@ -1,0 +1,64 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: catalog-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/catalog}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:q5sOl4GJf7}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: ${SPRING_JPA_HIBERNATE_FORMAT_SQL:true}
+  security:
+    enabled: ${SPRING_SECURITY_ENABLED:false}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9093}
+    consumer:
+      group-id: catalog-service-group
+    topic: my-topic
+  elasticsearch:
+    cluster-name: ${SPRING_ELASTICSEARCH_CLUSTER_NAME:elasticsearch}
+    repositories:
+      enabled: ${SPRING_ELASTICSEARCH_REPOSITORIES_ENABLED:true}
+    uris: ${SPRING_ELASTICSEARCH_URIS:https://elasticsearch-master:9200}
+    username: ${SPRING_ELASTICSEARCH_USERNAME:elastic}
+    password: ${SPRING_ELASTICSEARCH_PASSWORD:lXmuXN1wyXpAu0Un}
+  management:
+    endpoint:
+      health:
+        elasticsearch:
+          enabled: true
+    endpoints:
+      web:
+        exposure:
+          include: health,info,prometheus
+    metrics:
+      export:
+        prometheus:
+          enabled: true
+    security:
+      enabled: false
+  springdoc:
+    api-docs:
+      enabled: true
+    swagger-ui:
+      enabled: true
+logging:
+  level:
+    root: INFO
+    com.store: DEBUG
+security:
+  ignored: ${SECURITY_IGNORED:/**}
+  basic:
+    enabled: ${SECURITY_BASIC_ENABLED:false}
+  user:
+    name: ${SECURITY_USER_NAME:user}
+    password: ${SPRING_SECURITY_USER_PASSWORD:password}
+  jwt:
+    secret-key: ${SECURITY_JWT_SECRET_KEY:ZDbiJXqjL06maIhSmDftCQy7bD5J3fLFOFlOlgmNa+U=}

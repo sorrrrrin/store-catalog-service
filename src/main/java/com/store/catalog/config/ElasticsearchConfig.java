@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.net.ssl.SSLContext;
+import java.net.URI;
 
 @Configuration
 public class ElasticsearchConfig {
@@ -24,9 +25,18 @@ public class ElasticsearchConfig {
     @Value("${spring.elasticsearch.password}")
     private String elasticsearchPassword;
 
+    @Value("${spring.elasticsearch.uris}")
+    private String elasticsearchUris;
+
     @Bean
     public ElasticsearchClient elasticsearchClient() {
         try {
+            // Parse the URI from configuration
+            URI uri = URI.create(elasticsearchUris.split(",")[0].trim());
+            String host = uri.getHost();
+            int port = uri.getPort() != -1 ? uri.getPort() : (uri.getScheme().equals("https") ? 443 : 80);
+            String scheme = uri.getScheme();
+
             // Trust all certificates
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, new javax.net.ssl.TrustManager[]{new javax.net.ssl.X509TrustManager() {
@@ -47,13 +57,13 @@ public class ElasticsearchConfig {
             // Set up basic authentication
             BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(
-                    new AuthScope("elasticsearch-master", 9200),
+                    new AuthScope(host, port),
                     new UsernamePasswordCredentials(elasticsearchUsername, elasticsearchPassword)
             );
 
             // Build the RestClient
             RestClientBuilder builder = RestClient.builder(
-                            new HttpHost("elasticsearch-master", 9200, "https"))
+                            new HttpHost(host, port, scheme))
                     .setHttpClientConfigCallback(httpClientBuilder ->
                             httpClientBuilder
                                     .setSSLContext(sslContext)

@@ -10,7 +10,6 @@ import com.store.catalog.exceptions.ProductNotFoundException;
 import com.store.catalog.mappers.CatalogMapper;
 import com.store.catalog.mappers.ElasticMapper;
 import com.store.catalog.repositories.ProductRepository;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +58,7 @@ public class ProductService {
     }
 
     public ProductDto addProduct(ProductDto productDto) {
+        elasticProductService.addProduct(productDto);
         return catalogMapper.productToProductDto(productRepository.save(catalogMapper.productDtoToProduct(productDto)));
     }
 

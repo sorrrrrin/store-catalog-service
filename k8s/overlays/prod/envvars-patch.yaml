@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+spec:
+  template:
+    spec:
+      containers:
+        - name: catalog-service
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod,kafka-enabled
+          envFrom:
+            - configMapRef:
+                name: catalog-service-config
+            - secretRef:
+                name: catalog-service-secret

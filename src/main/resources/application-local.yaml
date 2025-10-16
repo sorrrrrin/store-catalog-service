@@ -15,13 +15,13 @@ spring:
     properties:
       hibernate:
         format_sql: ${SPRING_JPA_HIBERNATE_FORMAT_SQL:true}
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   security:
     enabled: ${SPRING_SECURITY_ENABLED:false}
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9093}
     consumer:
-      group-id: catalog-service-group
-    topic: my-topic
+      group-id: catalog-service-group-local
   elasticsearch:
     cluster-name: ${SPRING_ELASTICSEARCH_CLUSTER_NAME:elasticsearch}
     repositories:

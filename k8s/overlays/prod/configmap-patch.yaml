@@ -5,4 +5,5 @@ metadata:
   labels:
     app: catalog-service
 data:
+  EXAMPLE_KEY: "prod-value"
   # Add or override other keys as needed for prod

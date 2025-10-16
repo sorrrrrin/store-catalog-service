@@ -1,5 +1,3 @@
-server:
-  port: 8080
 spring:
   application:
     name: catalog-service
@@ -18,7 +16,8 @@ spring:
   security:
     enabled: ${SPRING_SECURITY_ENABLED}
   kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: catalog-service-group-stg
 security:
   ignored: ${SECURITY_IGNORED}
   basic:

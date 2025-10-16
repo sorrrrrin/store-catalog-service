@@ -8,7 +8,6 @@ import com.store.catalog.dtos.ProductDto;
 import com.store.catalog.entities.Product;
 import com.store.catalog.exceptions.ProductNotFoundException;
 import com.store.catalog.mappers.CatalogMapper;
-import com.store.catalog.mappers.ElasticMapper;
 import com.store.catalog.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,23 +30,15 @@ public class ProductService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    private final ElasticProductService elasticProductService;
-
-    private final ElasticMapper elasticMapper;
-
     @Autowired
-    public ProductService(CatalogMapper catalogMapper, ProductRepository productRepository, KafkaTemplate<String, String> kafkaTemplate, ElasticProductService elasticProductService, ElasticMapper elasticMapper) {
+    public ProductService(CatalogMapper catalogMapper, ProductRepository productRepository, KafkaTemplate<String, String> kafkaTemplate) {
         this.catalogMapper = catalogMapper;
         this.productRepository = productRepository;
         this.kafkaTemplate = kafkaTemplate;
-        this.elasticProductService = elasticProductService;
-        this.elasticMapper = elasticMapper;
     }
 
     public List<ProductDto> getAllProducts() {
         log.debug("Getting all products");
-        //test elastic search
-        elasticProductService.getAllProducts().forEach(System.out::println);
 
         return productRepository.findAll().stream().map(catalogMapper::productToProductDto).collect(Collectors.toList());
     }
@@ -58,7 +49,7 @@ public class ProductService {
     }
 
     public ProductDto addProduct(ProductDto productDto) {
-        elasticProductService.addProduct(productDto);
+//        elasticProductService.addProduct(productDto);
         return catalogMapper.productToProductDto(productRepository.save(catalogMapper.productDtoToProduct(productDto)));
     }
 

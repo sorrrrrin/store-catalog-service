@@ -6,8 +6,6 @@ import com.store.catalog.entities.Product;
 import com.store.catalog.exceptions.ProductNotFoundException;
 import com.store.catalog.mappers.CatalogMapper;
 import com.store.catalog.mappers.CatalogMapperImpl;
-import com.store.catalog.mappers.ElasticMapper;
-import com.store.catalog.mappers.ElasticMapperImpl;
 import com.store.catalog.repositories.ProductRepository;
 import com.store.catalog.utils.TestConstants;
 import com.store.catalog.utils.TestUtils;
@@ -35,17 +33,12 @@ public class ProductServiceTest {
     @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @Mock
-    ElasticProductService elasticProductService;
-
-    private final ElasticMapper elasticMapper = new ElasticMapperImpl();
-
     private final CatalogMapper catalogMapper = new CatalogMapperImpl();
 
 
     @BeforeEach
     void setUp() {
-        productService = new ProductService(catalogMapper, productRepository, kafkaTemplate, elasticProductService, elasticMapper);
+        productService = new ProductService(catalogMapper, productRepository, kafkaTemplate);
     }
 
     @Test

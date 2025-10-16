@@ -17,7 +17,7 @@ spec:
           image: catalog-service:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080 # The port on the pod
+            - containerPort: 8080 # The port on the pod, that app used
           envFrom:
             - configMapRef:
                 name: catalog-service-config

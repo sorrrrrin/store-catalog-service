@@ -1,0 +1,13 @@
+spring:
+  elasticsearch:
+    cluster-name: ${SPRING_ELASTICSEARCH_CLUSTER_NAME}
+    repositories:
+      enabled: ${SPRING_ELASTICSEARCH_REPOSITORIES_ENABLED}
+    uris: ${SPRING_ELASTICSEARCH_URIS}
+    username: ${SPRING_ELASTICSEARCH_USERNAME}
+    password: ${SPRING_ELASTICSEARCH_PASSWORD}
+management:
+  health:
+    elasticsearch:
+      enabled: true
+

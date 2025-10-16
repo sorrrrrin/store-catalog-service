@@ -3,9 +3,9 @@ package com.store.catalog.services;
 import com.store.catalog.dtos.ProductDto;
 import com.store.catalog.mappers.ElasticMapper;
 import com.store.catalog.repositories.ElasticProductRepository;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@Profile("elastic-enabled")
 @Slf4j
 public class ElasticProductService {
     private final ElasticProductRepository elasticProductRepository;

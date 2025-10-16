@@ -7,17 +7,12 @@ spring:
 # profiles:
     #active: local, kafka-enabled
   kafka:
-    consumer:
-      group-id: catalog-service-group
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
     topic: my-topic
-  elasticsearch:
-    cluster-name: ${SPRING_ELASTICSEARCH_CLUSTER_NAME}
-    repositories:
-      enabled: ${SPRING_ELASTICSEARCH_REPOSITORIES_ENABLED}
-    uris: ${SPRING_ELASTICSEARCH_URIS}
-    username: ${SPRING_ELASTICSEARCH_USERNAME}
-    password: ${SPRING_ELASTICSEARCH_PASSWORD}
 management:
+  health:
+    elasticsearch:
+      enabled: false
   endpoint:
     health:
       elasticsearch:

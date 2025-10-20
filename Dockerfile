@@ -1,5 +1,5 @@
-# Use a reliable Eclipse Temurin OpenJDK 17 runtime as a parent image
-FROM eclipse-temurin:17-jdk-jammy
+#FROM eclipse-temurin:17-jdk-jammy
+FROM ghcr.io/adoptium/temurin:17-jdk
 
 # Set the working directory inside the container
 WORKDIR /app

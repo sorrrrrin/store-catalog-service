@@ -6,14 +6,18 @@ import com.store.catalog.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/catalog")
+@Validated
 public class ProductController {
     @Autowired
     private ProductService productService;
@@ -79,5 +83,19 @@ public class ProductController {
     public ResponseEntity<ProductDto> getProductById(@PathVariable String id) {
         ProductDto product = productService.getProductById(id);
         return ResponseEntity.ok(product);
+    }
+
+    @Operation(summary = "Add a rating to a product", description = "Submit a rating (0-5) for a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rating added and product updated"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid rating")
+    })
+    @PostMapping("/products/{id}/rating/{rating}")
+    public ResponseEntity<ProductDto> addRating(
+            @PathVariable String id,
+            @PathVariable @DecimalMin("0.0") @DecimalMax("5.0") double rating) {
+        ProductDto updated = productService.addRating(id, rating);
+        return ResponseEntity.ok(updated);
     }
 }

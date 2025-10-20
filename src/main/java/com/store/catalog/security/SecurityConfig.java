@@ -25,32 +25,30 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    public SecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-                          CustomAccessDeniedHandler customAccessDeniedHandler) {
+    public SecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .anyRequest().permitAll());
 
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
-                    // Explicit public endpoints
-                    auth.requestMatchers(HttpMethod.GET, "/api/catalog/products", "/api/catalog/products/**").permitAll();
-                    auth.requestMatchers("/api/auth/login", "/public/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
-
-                    // Protect write operations on products explicitly
-                    auth.requestMatchers(HttpMethod.POST, "/api/catalog/products").hasAuthority(Constants.ROLE_ADMIN);
-                    auth.requestMatchers(HttpMethod.PUT, "/api/catalog/products").hasAuthority(Constants.ROLE_ADMIN);
-                    auth.requestMatchers(HttpMethod.DELETE, "/api/catalog/products", "/api/catalog/products/**").hasAuthority(Constants.ROLE_ADMIN);
-
-                    // fallback: require customer or admin for other /api endpoints
-                    auth.requestMatchers("/api/**").hasAnyAuthority(Constants.ROLE_CUSTOMER, Constants.ROLE_ADMIN)
-                            .anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/api/catalog/products", "/api/catalog/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/catalog/products").hasAuthority(Constants.ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.PUT,"/api/catalog/products").hasAuthority(Constants.ROLE_ADMIN)
+                        .requestMatchers(HttpMethod.DELETE,"/api/catalog/products", "/catalog/catalog/products/all").hasAuthority(Constants.ROLE_ADMIN)
+                        .requestMatchers("/api/auth/login", "/public/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/**").hasAnyAuthority(Constants.ROLE_CUSTOMER, Constants.ROLE_ADMIN)
+                        .anyRequest().authenticated()
+                )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler)

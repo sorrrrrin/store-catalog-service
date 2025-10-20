@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "products")
@@ -22,6 +21,16 @@ public class Product {
     private double price;
     private int quantity;
     private String sku;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private double ratings = 0.0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int reviews = 0;
+
+    private String image;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

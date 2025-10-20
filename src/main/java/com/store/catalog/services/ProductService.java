@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,5 +78,21 @@ public class ProductService {
 
     public void deleteAllProducts() {
         productRepository.deleteAll();
+    }
+
+    public ProductDto addRating(String productId, double rating) {
+        if (rating < 0.0 || rating > 5.0) {
+            throw new IllegalArgumentException("Rating must be between 0 and 5");
+        }
+
+        int updated = productRepository.updateRatingsAndIncrementReviews(productId, rating);
+        if (updated == 0) {
+            throw new ProductNotFoundException("Product with id " + productId + " not found");
+        }
+
+        Product updatedProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + productId + " not found"));
+
+        return catalogMapper.productToProductDto(updatedProduct);
     }
 }

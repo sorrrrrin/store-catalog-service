@@ -20,4 +20,7 @@ public class ElasticProductDto {
     private int quantity;
     private String sku;
     private CategoryDto category;
+    private double ratings;
+    private int reviews;
+    private String image;
 }

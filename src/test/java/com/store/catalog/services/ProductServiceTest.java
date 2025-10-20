@@ -124,4 +124,55 @@ public class ProductServiceTest {
 
         verify(productRepository, times(1)).deleteAll();
     }
+
+    // ----- New tests for addRating -----
+
+    @Test
+    void addRating_success_updatesAverageAndCount() {
+        String id = TestConstants.PRODUCT_ID;
+        double newRating = 5.0;
+
+        Product updatedProduct = TestUtils.getProduct();
+        double oldAvg = updatedProduct.getRatings();
+        int oldCount = updatedProduct.getReviews();
+        double expectedAvg = ((oldAvg * oldCount) + newRating) / (oldCount + 1);
+        int expectedCount = oldCount + 1;
+
+        when(productRepository.updateRatingsAndIncrementReviews(id, newRating)).thenReturn(1);
+
+        updatedProduct.setRatings(expectedAvg);
+        updatedProduct.setReviews(expectedCount);
+        when(productRepository.findById(id)).thenReturn(Optional.of(updatedProduct));
+
+        ProductDto result = productService.addRating(id, newRating);
+
+        assertNotNull(result);
+        assertEquals(expectedCount, result.getReviews());
+        assertEquals(expectedAvg, result.getRatings(), 1e-6);
+
+        verify(productRepository, times(1)).updateRatingsAndIncrementReviews(id, newRating);
+        verify(productRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void addRating_invalidRating_throwsIllegalArgument() {
+        String id = TestConstants.PRODUCT_ID;
+        double invalidRating = 6.0; // out of allowed range
+
+        assertThrows(IllegalArgumentException.class, () -> productService.addRating(id, invalidRating));
+
+        verify(productRepository, never()).updateRatingsAndIncrementReviews(anyString(), anyDouble());
+    }
+
+    @Test
+    void addRating_productNotFound_throwsProductNotFoundException() {
+        String id = TestConstants.PRODUCT_ID;
+        double rating = 4.0;
+
+        when(productRepository.updateRatingsAndIncrementReviews(id, rating)).thenReturn(0);
+
+        assertThrows(ProductNotFoundException.class, () -> productService.addRating(id, rating));
+
+        verify(productRepository, times(1)).updateRatingsAndIncrementReviews(id, rating);
+    }
 }
